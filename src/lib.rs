@@ -1,6 +1,8 @@
 use reqwest::blocking;
 use scraper::{ElementRef, Html, Selector};
 
+use std::fmt;
+
 #[derive(Debug)]
 pub struct Preview {
     pub url: String,
@@ -15,13 +17,38 @@ pub struct PreviewResponse {
     pub name: Option<String>,
     pub image: Option<String>,
 }
+
+impl fmt::Display for PreviewResponse {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(
+            f,
+            "\nUrl >> {}\nName >> {}\nTitle >> {}\nDescription >> {}\nImage >> {}",
+            self.url
+                .as_ref()
+                .unwrap_or(&"Url not Avaliable".to_string()),
+            self.name
+                .as_ref()
+                .unwrap_or(&"Name not Avaliable".to_string()),
+            self.title
+                .as_ref()
+                .unwrap_or(&"Title not Avaliable".to_string()),
+            self.description
+                .as_ref()
+                .unwrap_or(&"Description not Avaliable".to_string()),
+            self.image
+                .as_ref()
+                .unwrap_or(&"Image not Avaliable".to_string())
+        )
+    }
+}
+
 impl Preview {
-    pub fn new<'a>(url: &'a str) -> Preview {
+    pub fn new(url: &str) -> Preview {
         let document = Html::parse_document(&blocking::get(url).unwrap().text().unwrap());
-        return Preview {
+        Preview {
             url: url.to_owned(),
             document,
-        };
+        }
     }
 
     /// Fetch preview fetches all the supported properties
@@ -32,13 +59,13 @@ impl Preview {
         let site_image = self.extract_image();
         let site_url = self.extract_site_url(&self.url);
 
-        return PreviewResponse {
+        PreviewResponse {
             description: site_description,
             image: site_image,
             name: site_name,
             url: site_url,
             title: site_title,
-        };
+        }
     }
 
     pub(crate) fn extract_description(&self) -> Option<String> {
@@ -92,10 +119,10 @@ impl Preview {
                 );
             }
         };
-        return Some(og_title.to_owned());
+        Some(og_title.to_owned())
     }
 
-    pub(crate) fn extract_site_name<'a>(&self) -> Option<String> {
+    pub(crate) fn extract_site_name(&self) -> Option<String> {
         let og_site_name =
             match self.extract_from_tag(&self.document, "meta", "property", "og:site_name") {
                 Some(site_name) => site_name.value().attr("content").unwrap(),
@@ -119,10 +146,10 @@ impl Preview {
                     );
                 }
             };
-        return Some(og_site_name.to_owned());
+        Some(og_site_name.to_owned())
     }
 
-    pub(crate) fn extract_image<'a>(&self) -> Option<String> {
+    pub(crate) fn extract_image(&self) -> Option<String> {
         let og_image = match self.extract_from_tag(&self.document, "meta", "property", "og:image") {
             Some(img) => img.value().attr("content"),
             None => {
@@ -140,10 +167,10 @@ impl Preview {
                 );
             }
         };
-        return Some(og_image.unwrap().to_owned());
+        Some(og_image.unwrap().to_owned())
     }
 
-    pub(crate) fn extract_site_url<'a>(&self, link: &'a str) -> Option<String> {
+    pub(crate) fn extract_site_url(&self, link: &str) -> Option<String> {
         let og_site_url = match self.extract_from_tag(&self.document, "meta", "property", "og:url")
         {
             Some(og_url) => og_url.value().attr("content"),
@@ -158,7 +185,7 @@ impl Preview {
                 return Some(meta_site_url.unwrap().to_owned());
             }
         };
-        return Some(og_site_url.unwrap().to_owned());
+        Some(og_site_url.unwrap().to_owned())
     }
 
     pub(crate) fn extract_from_tag<'a>(
