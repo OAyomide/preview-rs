@@ -24,6 +24,7 @@ impl Preview {
         };
     }
 
+    /// Fetch preview fetches all the supported properties
     pub fn fetch_preview(&self) -> PreviewResponse {
         let site_description = self.extract_description();
         let site_title = self.extract_title();
