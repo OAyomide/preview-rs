@@ -1,4 +1,4 @@
-### Previewrs
+## Preview-rs
 
 A rust crate to fetch preview metadata for a URL.
 
