@@ -3,6 +3,10 @@ name = "preview-rs"
 version = "0.1.0"
 authors = ["Ayomide Onigbinde <onigbindeayomide@gmail.com>"]
 edition = "2018"
+description="A (simple) crate for fetching preview metadata from shorturls and links"
+homepage="https://github.com/oayomide/preview-rs"
+repository="https://github.com/oayomide/preview-rs"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
