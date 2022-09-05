@@ -51,6 +51,19 @@ impl Preview {
         }
     }
 
+    pub async fn async_new(url: &str) -> Preview {
+        let document =
+            Html::parse_document(&reqwest::get(url).await.unwrap().text().await.unwrap());
+        Preview {
+            url: url.to_owned(),
+            document,
+        }
+    }
+
+    pub async fn async_fetch_preview(&self) -> PreviewResponse {
+        self.fetch_preview()
+    }
+
     /// Fetch preview fetches all the supported properties
     pub fn fetch_preview(&self) -> PreviewResponse {
         let site_description = self.extract_description();

@@ -4,5 +4,4 @@ fn main() {
 
     println!("Here is the preview of this URL: {}", &preview);
     println!("Here is the preview of this URL: {:#?}", &preview);
-
 }
