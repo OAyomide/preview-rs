@@ -45,6 +45,8 @@ impl fmt::Display for PreviewResponse {
 impl Preview {
     pub fn new(url: &str) -> Preview {
         let document = Html::parse_document(&blocking::get(url).unwrap().text().unwrap());
+        println!("Here is the preview of this URL: {:?}", &document);
+
         Preview {
             url: url.to_owned(),
             document,
@@ -54,6 +56,7 @@ impl Preview {
     pub async fn async_new(url: &str) -> Preview {
         let document =
             Html::parse_document(&reqwest::get(url).await.unwrap().text().await.unwrap());
+
         Preview {
             url: url.to_owned(),
             document,
