@@ -45,7 +45,6 @@ impl fmt::Display for PreviewResponse {
 impl Preview {
     pub fn new(url: &str) -> Preview {
         let document = Html::parse_document(&blocking::get(url).unwrap().text().unwrap());
-        println!("Here is the preview of this URL: {:?}", &document);
 
         Preview {
             url: url.to_owned(),
