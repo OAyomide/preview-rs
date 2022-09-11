@@ -64,7 +64,19 @@ impl Preview {
     }
 
     pub async fn async_fetch_preview(&self) -> PreviewResponse {
-        self.fetch_preview()
+        let site_description = self.extract_description();
+        let site_title = self.extract_title();
+        let site_name = self.extract_site_name();
+        let site_image = self.extract_image();
+        let site_url = self.extract_site_url(&self.url);
+
+        PreviewResponse {
+            description: site_description,
+            image: site_image,
+            name: site_name,
+            url: site_url,
+            title: site_title,
+        }
     }
 
     /// Fetch preview fetches all the supported properties
