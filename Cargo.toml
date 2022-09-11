@@ -1,6 +1,6 @@
 [package]
 name = "preview-rs"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Ayomide Onigbinde <onigbindeayomide@gmail.com>"]
 edition = "2018"
 description="A (simple) crate for fetching preview metadata from shorturls and links"
