@@ -1,7 +1,7 @@
 use reqwest::blocking;
 use scraper::{ElementRef, Html, Selector};
 
-use std::fmt;
+use std::{fmt, future::Future};
 
 #[derive(Debug)]
 pub struct Preview {
@@ -42,6 +42,7 @@ impl fmt::Display for PreviewResponse {
     }
 }
 
+// implement future for struct PreviewResponse
 impl Preview {
     pub fn new(url: &str) -> Preview {
         let document = Html::parse_document(&blocking::get(url).unwrap().text().unwrap());
@@ -62,20 +63,8 @@ impl Preview {
         }
     }
 
-    pub async fn async_fetch_preview(&self) -> PreviewResponse {
-        let site_description = self.extract_description();
-        let site_title = self.extract_title();
-        let site_name = self.extract_site_name();
-        let site_image = self.extract_image();
-        let site_url = self.extract_site_url(&self.url);
-
-        PreviewResponse {
-            description: site_description,
-            image: site_image,
-            name: site_name,
-            url: site_url,
-            title: site_title,
-        }
+    pub async fn async_fetch_preview(&self) -> Result<PreviewResponse, ()> {
+        Ok(self.fetch_preview())
     }
 
     /// Fetch preview fetches all the supported properties
