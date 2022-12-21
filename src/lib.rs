@@ -201,7 +201,7 @@ impl Preview {
                 return Some(meta_site_url.unwrap().to_owned());
             }
         };
-        Some(og_site_url.unwrap().to_owned())
+        Some(og_url.unwrap().to_owned())
     }
 
     pub(crate) fn extract_from_tag<'a>(
