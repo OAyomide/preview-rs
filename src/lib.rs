@@ -187,7 +187,7 @@ impl Preview {
     }
 
     pub(crate) fn extract_site_url(&self, link: &str) -> Option<String> {
-        let og_site_url = match self.extract_from_tag(&self.document, "meta", "property", "og:url")
+        let og_url = match self.extract_from_tag(&self.document, "meta", "property", "og:url")
         {
             Some(og_url) => og_url.value().attr("content"),
             None => {
