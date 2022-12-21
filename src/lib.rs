@@ -1,7 +1,7 @@
 use reqwest::blocking;
 use scraper::{ElementRef, Html, Selector};
 
-use std::{fmt, future::Future};
+use std::{fmt};
 
 #[derive(Debug)]
 pub struct Preview {
@@ -193,12 +193,10 @@ impl Preview {
             None => {
                 let meta_site_url =
                     match self.extract_from_tag(&self.document, "link", "rel", "canonical") {
-                        Some(meta_url) => meta_url.value().attr("content"),
-                        None => {
-                            return Some(link.to_owned());
-                        }
+                        Some(meta_url) => meta_url.value().attr("content").unwrap_or(link),
+                        None => link
                     };
-                return Some(meta_site_url.unwrap().to_owned());
+                return Some(meta_site_url.to_owned());
             }
         };
         Some(og_url.unwrap().to_owned())
