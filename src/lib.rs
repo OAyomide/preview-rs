@@ -171,7 +171,11 @@ impl Preview {
             None => {
                 let meta_image = self.extract_from_tag(&self.document, "link", "rel", "image_src");
                 if meta_image.is_none() {
-                    return None;
+                    let first_img:Option<String> = match self.document.select(&Selector::parse("img").unwrap()).next() {
+                        Some(img) => Some(img.value().attr("src").unwrap().to_owned()),
+                        None => None
+                    };
+                    return first_img;
                 }
                 return Some(
                     meta_image
