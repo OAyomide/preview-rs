@@ -1,5 +1,6 @@
 use reqwest::blocking;
 use scraper::{ElementRef, Html, Selector};
+use serde::{Deserialize, Serialize};
 
 use std::{fmt};
 
@@ -9,7 +10,7 @@ pub struct Preview {
     pub document: Html,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PreviewResponse {
     pub description: Option<String>,
     pub title: Option<String>,
