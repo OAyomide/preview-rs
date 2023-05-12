@@ -1,8 +1,9 @@
 use reqwest::blocking;
 use scraper::{ElementRef, Html, Selector};
 use serde::{Deserialize, Serialize};
+use url::{ParseError, Url};
 
-use std::{fmt};
+use std::fmt;
 
 #[derive(Debug)]
 pub struct Preview {
@@ -17,6 +18,12 @@ pub struct PreviewResponse {
     pub url: Option<String>,
     pub name: Option<String>,
     pub image: Option<String>,
+}
+
+fn base_url(base: &String, url: &String) -> Result<String, ParseError> {
+    let this_document = Url::parse(base.as_str())?;
+    let url = this_document.join(url.as_str())?;
+    Ok(url.to_string())
 }
 
 impl fmt::Display for PreviewResponse {
@@ -172,9 +179,19 @@ impl Preview {
             None => {
                 let meta_image = self.extract_from_tag(&self.document, "link", "rel", "image_src");
                 if meta_image.is_none() {
-                    let first_img:Option<String> = match self.document.select(&Selector::parse("img").unwrap()).next() {
-                        Some(img) => Some(img.value().attr("src").unwrap().to_owned()),
-                        None => None
+                    let first_img: Option<String> = match self
+                        .document
+                        .select(&Selector::parse("img").unwrap())
+                        .next()
+                    {
+                        Some(img) => {
+                            let mut image_src = img.value().attr("src").unwrap().to_owned();
+                            if !image_src.starts_with("http") {
+                                image_src = base_url(&self.extract_site_url(&self.url).unwrap_or("".to_owned()), &image_src).unwrap_or(image_src);
+                            }
+                            return Some(image_src)
+                        }
+                        None => None,
                     };
                     return first_img;
                 }
@@ -192,14 +209,13 @@ impl Preview {
     }
 
     pub(crate) fn extract_site_url(&self, link: &str) -> Option<String> {
-        let og_url = match self.extract_from_tag(&self.document, "meta", "property", "og:url")
-        {
+        let og_url = match self.extract_from_tag(&self.document, "meta", "property", "og:url") {
             Some(og_url) => og_url.value().attr("content"),
             None => {
                 let meta_site_url =
                     match self.extract_from_tag(&self.document, "link", "rel", "canonical") {
                         Some(meta_url) => meta_url.value().attr("content").unwrap_or(link),
-                        None => link
+                        None => link,
                     };
                 return Some(meta_site_url.to_owned());
             }
